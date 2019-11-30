@@ -1,0 +1,13 @@
+---
+general:
+  user-agent: "Dalvik/2.1.0 (Linux; U; Android 9; Pixel 2 Build/PQ3A.190801.002)"
+  content-type: "application/x-www-form-urlencoded"
+  content-language: "en-US"
+
+ema:
+  host: "api.apsystemsema.com"
+  port: 8073
+  key: !ENV ${EMA_KEY}
+  appid: !ENV ${EMA_APPID}
+  username: !ENV ${EMA_USERNAME}
+  password: !ENV ${EMA_PASSWORD}
