@@ -14,8 +14,13 @@ def main():
     required = parser.add_argument_group('required arguments')
 
     required.add_argument(
-        "-a", "--appid", required=True, action="store",
-        dest="appid",
+        "-a", "--access_token", required=True, action="store",
+        dest="access_token",
+        help="EMA app identifier"
+    )
+    required.add_argument(
+        "-c", "--checkcode", required=True, action="store",
+        dest="checkcode",
         help="EMA app identifier"
     )
     required.add_argument(
@@ -50,9 +55,9 @@ def main():
     if args.key is not None:
         args.key = str.encode(args.key)
 
-    key, appid, username, password = crypt.generate(args.appid, args.username, args.password, args.key)
+    key, access_token, checkcode, username, password = crypt.generate(args.access_token, args.checkcode, args.username, args.password, args.key)
     crypt.write_key(key, args.keyfile)
-    crypt.write_credentials(appid, username, password, args.outfile)
+    crypt.write_credentials(access_token, checkcode, username, password, args.outfile)
 
     return 0
 

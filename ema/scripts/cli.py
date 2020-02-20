@@ -30,10 +30,20 @@ def main():
     ema_conf = conf['ema']
     ema = EMA(ema_conf['host'],
               ema_conf['port'],
-              ema_conf['key'])
-    ema.test_decrypt(ema_conf['appid'])
-    ema.test_decrypt(ema_conf['username'])
-    ema.test_decrypt(ema_conf['password'])
+              ema_conf['key'],
+              conf['general'])
+    
+    resource_endpoints.check_endpoints(ema_conf['host'], ema_conf['port'])
+
+
+#    ema.getVersion()
+    ema.authorize(
+        ema_conf['access_token'],
+        ema_conf['username'],
+        ema_conf['password'],
+        ema_conf['checkcode'])
+#    ema.login(ema_conf['username'],
+#              ema_conf['password'])
 
     return 0
 
