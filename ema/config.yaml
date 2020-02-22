@@ -9,6 +9,5 @@ ema:
   port: 9035
   key: !ENV ${EMA_KEY}
   access_token: !ENV ${EMA_ACCESS_TOKEN}
-  checkcode: !ENV ${EMA_CHECKCODE}
   username: !ENV ${EMA_USERNAME}
   password: !ENV ${EMA_PASSWORD}
