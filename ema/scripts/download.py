@@ -62,7 +62,7 @@ def main():
     downloader.authorize(username, password)
 
     downloader.get_ecu_info()
-#    downloader.get_view_list()
+    downloader.get_view_list()
 
     return 0
 

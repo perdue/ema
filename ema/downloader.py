@@ -122,18 +122,27 @@ class EMADownloader:
             print('get_ecu_info()')
 
     def get_view_list(self):
-        print('get_view_list()')
+        if (self._debug):
+            print('get_view_list()')
         url = self._url(reg_endpoints['viewList'])
-        print('\turl={}'.format(url))
+        if (self._debug):
+            print('\turl={}'.format(url))
+
         data = {
             'access_token': self._access_token,
             'language': self._general_conf['content-language'],
             'userId': self._user_id
         }
-        print('\tdata={}'.format(data))
+        self._add_check_code(data)
+        if (self._debug):
+            print('\tdata={}'.format(data))
+
         response = self._request(url, data)
         json = response.json()
-        print('\tresponse={}'.format(json))
+        if (self._debug):
+            print('\tresponse={}'.format(json))
+
         self._set_view_id(json['data']['Right']['viewInfoId'])
-        print('\t_view_id={}'.format(self._view_id))
-        print('get_view_list()')
+        if (self._debug):
+            print('\t_view_id={}'.format(self._view_id))
+            print('get_view_list()')
