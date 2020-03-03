@@ -17,9 +17,9 @@ class MACGenerator:
         digester = hmac.new(key, msg_bytes, hashlib.sha1)
         return str(digester.hexdigest()).upper()
 
-    def _buildStr(self, p):
+    def _build_str(self, p):
         if (self._debug):
-            print('{}'.format('buildStr()'))
+            print('{}'.format('build_str()'))
             print('\tp={}'.format(p))
             print('\tsorted keys={}'.format(sorted(p.keys())))
         args_str = ''
@@ -29,14 +29,14 @@ class MACGenerator:
         if (self._debug):
             print('\targs_str={}'.format(args_str))
             print('\turl_str={}'.format(url_str))
-            print('{}'.format('buildStr()'))
+            print('{}'.format('build_str()'))
         return url_str
 
     def code(self, p):
         if (self._debug):
             print('{}'.format('code()'))
         p[self._salt_key] = self._salt_value
-        url_str = self._buildStr(p)
+        url_str = self._build_str(p)
         digest = self._digest(self._secret_key, url_str)
         del p[self._salt_key]
         if (self._debug):
