@@ -63,6 +63,8 @@ def main():
 
     downloader.get_ecu_info()
     downloader.get_view_list()
+    downloader.get_power_batch('20191201')
+    downloader.get_power_batch('20200301')
 
     return 0
 

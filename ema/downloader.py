@@ -146,3 +146,31 @@ class EMADownloader:
         if (self._debug):
             print('\t_view_id={}'.format(self._view_id))
             print('get_view_list()')
+
+    def get_power_batch(self, date_str):
+        if (self._debug):
+            print('get_power_batch()')
+
+        url = self._url(prod_endpoints['powerBatch'])
+        if (self._debug):
+            print('\turl={}'.format(url))
+
+        data = {
+            'date': date_str,
+            'access_token': self._access_token,
+            'systemId': self._system_id,
+            'infoId': self._view_id,
+            'language': self._general_conf['content-language'],
+            'type': str(2)
+        }
+        self._add_check_code(data)
+        if (self._debug):
+            print('\tdata={}'.format(data))
+
+        response = self._request(url, data)
+        json = response.json()
+        if (self._debug):
+            print('\tresponse={}'.format(json))
+
+        if (self._debug):
+            print('get_power_batch()')
