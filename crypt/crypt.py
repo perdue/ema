@@ -5,27 +5,37 @@
 import os
 from cryptography.fernet import Fernet
 
-def generate(access_token, checkcode, username, password, key):
+def generate(access_token,
+             secret_key,
+             salt_key,
+             salt_value,
+             username,
+             password,
+             key):
     if key is None:
         key = Fernet.generate_key()
     print(key)
 
     cipher_suite = Fernet(key)
     ciphered_access_token = cipher(access_token, cipher_suite)
-    ciphered_checkcode = cipher(checkcode, cipher_suite)
+    ciphered_secret_key = cipher(secret_key, cipher_suite)
+    ciphered_salt_key = cipher(salt_key, cipher_suite)
+    ciphered_salt_value = cipher(salt_value, cipher_suite)
     ciphered_username = cipher(username, cipher_suite)
     ciphered_password = cipher(password, cipher_suite)
 
     check(ciphered_access_token, cipher_suite)
-    check(ciphered_checkcode, cipher_suite)
+    check(ciphered_secret_key, cipher_suite)
+    check(ciphered_salt_key, cipher_suite)
+    check(ciphered_salt_value, cipher_suite)
     check(ciphered_username, cipher_suite)
     check(ciphered_password, cipher_suite)
 
-    return key, ciphered_access_token, ciphered_checkcode, ciphered_username, ciphered_password
+    return ciphered_access_token, ciphered_secret_key, ciphered_salt_key, ciphered_salt_value, ciphered_username, ciphered_password, key
 
 def cipher(text, cipher_suite):
     ciphered_text = cipher_suite.encrypt(str.encode(text)) # required to be bytes
-    print(ciphered_text)
+    #print(ciphered_text)
     return ciphered_text
 
 def check(bytes, cipher_suite):
@@ -40,12 +50,20 @@ def write_key(key, filename):
     f.close
     os.chmod(filename, 0o600)
 
-def write_credentials(access_token, checkcode, username, password, filename):
+def write_credentials(access_token,
+                      secret_key,
+                      salt_key,
+                      salt_value,
+                      username,
+                      password,
+                      filename):
     mkdirs(filename)
     print('Writing credentials to ' + filename)
     f = open(filename, "w+")
     f.write(statement('EMA_ACCESS_TOKEN', access_token))
-    f.write(statement('EMA_CHECKCODE', checkcode))
+    f.write(statement('EMA_SECRET_KEY', secret_key))
+    f.write(statement('EMA_SALT_KEY', salt_key))
+    f.write(statement('EMA_SALT_VALUE', salt_value))
     f.write(statement('EMA_USERNAME', username))
     f.write(statement('EMA_PASSWORD', password))
     f.close

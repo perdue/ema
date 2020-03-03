@@ -7,7 +7,10 @@ general:
 ema:
   host: "www.apsystemsema.cn"
   port: 9035
-  key: !ENV ${EMA_KEY}
   access_token: !ENV ${EMA_ACCESS_TOKEN}
+  key: !ENV ${EMA_KEY}
+  secret_key: !ENV ${EMA_SECRET_KEY}
+  salt_key: !ENV ${EMA_SALT_KEY}
+  salt_value: !ENV ${EMA_SALT_VALUE}
   username: !ENV ${EMA_USERNAME}
   password: !ENV ${EMA_PASSWORD}

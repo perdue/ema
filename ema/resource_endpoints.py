@@ -35,12 +35,8 @@ BASE = 'aps-api-web/api/view'
 
 reg_endpoints = {
     'checkUser': _build_resource(BASE, 'registration', 'user', 'checkUser'),
-      'ecuInfo': _build_resource(BASE, 'registration', 'ecu', 'getEcuInfoBelowUser')
-}
-
-check_codes = {
-    'checkUser': 'AFF2B9F8B513D91AE48968A2A529BFF3BA6FF9E9',
-      'ecuInfo': '9E70A86F59E8EF120C13470327CE62100DCE072C'
+      'ecuInfo': _build_resource(BASE, 'registration', 'ecu', 'getEcuInfoBelowUser'),
+     'viewList': _build_resource(BASE, 'registration', 'view', 'getViewListBelowUser')
 }
 
 def build_url(host, port, endpoint):

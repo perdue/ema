@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""EMA Downloader"""
+"""EMA Data Downloader"""
 
 from cryptography.fernet import Fernet
 import requests
@@ -9,22 +9,13 @@ import json
 from resource_endpoints import *
 
 class EMADownloader:
-    def __init__(self, host, port, access_token, key_text, general_conf, debug=False):
+    def __init__(self, host, port, access_token, key_text, mac_generator, general_conf, debug=False):
         self._host = host
         self._port = str(port)
-        self._cipher_suite = Fernet(str.encode(key_text))
-        self._access_token = self._decrypt(access_token)
+        self._access_token = access_token
+        self._mac_generator = mac_generator
         self._general_conf = general_conf
         self._debug = debug
-
-    def _decrypt(self, ciphered_text):
-        bytes = str.encode(ciphered_text)
-        unciphered_bytes = self._cipher_suite.decrypt(bytes)
-        text = unciphered_bytes.decode('utf-8')
-        return text
-
-    def test_decrypt(self, text):
-        self._decrypt(text)
 
     def _headers(self):
         headers = {
@@ -40,6 +31,14 @@ class EMADownloader:
 
     def _request(self, url, data):
         return requests.post(url, data=data, headers=self._headers())
+
+    def _add_check_code(self, data):
+        check_code = self._mac_generator.code(data)
+        if (self._debug):
+            print('_add_check_code()')
+            print('\tcheckcode={}'.format(check_code))
+            print('_add_check_code()')
+        data['checkcode'] = check_code
 
     def getVersion(self):
         url = 'http://' + \
@@ -69,19 +68,21 @@ class EMADownloader:
         url = self._url(reg_endpoints['checkUser'])
         if (self._debug):
             print('\turl={}'.format(url))
+
         data = {
             'access_token': self._access_token,
-            'password': self._decrypt(passwd),
+            'password': passwd,
             'language': self._general_conf['content-language'],
-            'checkcode': check_codes['checkUser'],
-            'username': self._decrypt(user)
+            'username': user
         }
+        self._add_check_code(data)
         if (self._debug):
             print('\tdata={}'.format(data))
         response = self._request(url, data)
         json = response.json()
         if (self._debug):
             print('\tresponse={}'.format(json))
+
         self._set_user_id(json['data']['user']['id'])
         if (self._debug):
             print('\t_user_id={}'.format(self._user_id))
@@ -94,14 +95,16 @@ class EMADownloader:
         url = self._url(reg_endpoints['ecuInfo'])
         if (self._debug):
             print('\turl={}'.format(url))
+
         data = {
             'access_token': self._access_token,
-            'checkcode': check_codes['ecuInfo'],
             'language': self._general_conf['content-language'],
             'userId': self._user_id
         }
+        self._add_check_code(data)
         if (self._debug):
             print('\tdata={}'.format(data))
+
         response = self._request(url, data)
         json = response.json()
         if (self._debug):
@@ -118,23 +121,19 @@ class EMADownloader:
         if (self._debug):
             print('get_ecu_info()')
 
-#    def _extract_view_id(self, data):
-#        parsed = json.loads(data)
-#        print(data)
-
-#    def login(self, username, password):
-#        url = self._url(user_endpoints['login'])
-#        data = {
-#            'username': self._decrypt(username),
-#            'password': self._decrypt(password),
-#            'access_token': self._access_token
-#        }
-#        response = self._request(url, data)
-#        print(response.text)
-#        json_string = response.json()['data']
-#        parsed = json.loads(json_string)
-#        print(json_string)
-#        print(parsed)
-#        print(json.loads(parsed['systemId'])[0])
-#        _extract_view_id(parsed['viewList'])
-
+    def get_view_list(self):
+        print('get_view_list()')
+        url = self._url(reg_endpoints['viewList'])
+        print('\turl={}'.format(url))
+        data = {
+            'access_token': self._access_token,
+            'language': self._general_conf['content-language'],
+            'userId': self._user_id
+        }
+        print('\tdata={}'.format(data))
+        response = self._request(url, data)
+        json = response.json()
+        print('\tresponse={}'.format(json))
+        self._set_view_id(json['data']['Right']['viewInfoId'])
+        print('\t_view_id={}'.format(self._view_id))
+        print('get_view_list()')

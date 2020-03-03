@@ -19,9 +19,19 @@ def main():
         help="EMA app identifier"
     )
     required.add_argument(
-        "-c", "--checkcode", required=True, action="store",
-        dest="checkcode",
-        help="EMA app identifier"
+        "-s", "--secret_key", required=True, action="store",
+        dest="secret_key",
+        help="EMA app hash secret key"
+    )
+    required.add_argument(
+        "-sk", "--salt_key", required=True, action="store",
+        dest="salt_key",
+        help="EMA app hash salt key"
+    )
+    required.add_argument(
+        "-sv", "--salt_value", required=True, action="store",
+        dest="salt_value",
+        help="EMA app hash salt value"
     )
     required.add_argument(
         "-u", "--username", required=True, action="store",
@@ -55,9 +65,11 @@ def main():
     if args.key is not None:
         args.key = str.encode(args.key)
 
-    key, access_token, checkcode, username, password = crypt.generate(args.access_token, args.checkcode, args.username, args.password, args.key)
-    crypt.write_key(key, args.keyfile)
-    crypt.write_credentials(access_token, checkcode, username, password, args.outfile)
+    access_token, secret_key, salt_key, salt_value, username, password, key = crypt.generate(args.access_token, args.secret_key, args.salt_key, args.salt_value, args.username, args.password, args.key)
+    crypt.write_credentials(access_token, secret_key, salt_key, salt_value, username, password, args.outfile)
+
+    if key != args.key:
+        crypt.write_key(key, args.keyfile)
 
     return 0
 
