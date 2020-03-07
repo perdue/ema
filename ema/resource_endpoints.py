@@ -6,9 +6,10 @@ def _build_resource(base, view, resource, action):
 BASE = 'aps-api-web/api/view'
 
 reg_endpoints = {
-    'checkUser': _build_resource(BASE, 'registration', 'user', 'checkUser'),
-      'ecuInfo': _build_resource(BASE, 'registration', 'ecu', 'getEcuInfoBelowUser'),
-     'viewList': _build_resource(BASE, 'registration', 'view', 'getViewListBelowUser')
+     'checkUser': _build_resource(BASE, 'registration', 'user', 'checkUser'),
+       'ecuInfo': _build_resource(BASE, 'registration', 'ecu', 'getEcuInfoBelowUser'),
+      'viewList': _build_resource(BASE, 'registration', 'view', 'getViewListBelowUser'),
+    'viewDetail': _build_resource(BASE, 'registration', 'view', 'getViewDetailsOfManualView')
 }
 
 prod_endpoints = {

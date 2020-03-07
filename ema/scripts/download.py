@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-"""Console script for ema."""
+"""Console script for downloading EMA data."""
 import _localpath
 import argparse
 import sys
+import os
 from config import parse_config
 from decrypt import Decrypter
 from downloader import EMADownloader
@@ -11,7 +12,7 @@ import resource_endpoints
 from mac import MACGenerator
 
 def main():
-    """Console script for ema."""
+    """Console script for downloading EMA data."""
 
     parser = argparse.ArgumentParser()
     optional = parser._action_groups.pop()
@@ -26,6 +27,12 @@ def main():
         "--debug", default=False, action="store_true",
         dest="debug",
         help="print debug messages"
+    )
+    optional.add_argument(
+        "-d", "--outdir", required=False, action="store",
+        dest="outdir",
+        help="output directory",
+        default=os.path.expanduser("~")+"/downloads/ema"
     )
     parser._action_groups.append(optional)
     args = parser.parse_args()
@@ -63,8 +70,11 @@ def main():
 
     downloader.get_ecu_info()
     downloader.get_view_list()
-    downloader.get_power_batch('20191201')
-    downloader.get_power_batch('20200301')
+    downloader.get_view_detail()
+    downloader.get_power_batch('20191009', args.outdir)
+    downloader.get_power_batch('20191103', args.outdir)
+    downloader.get_power_batch('20191201', args.outdir)
+    downloader.get_power_batch('20200229', args.outdir)
 
     return 0
 

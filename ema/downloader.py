@@ -2,9 +2,13 @@
 
 """EMA Data Downloader"""
 
+import os
 from cryptography.fernet import Fernet
 import requests
 import json
+from datetime import datetime, timedelta
+import pytz
+import itertools
 
 from resource_endpoints import *
 
@@ -40,6 +44,18 @@ class EMADownloader:
             print('_add_check_code()')
         data['checkcode'] = check_code
 
+    def _mkdirs(self, filename):
+        dirname = os.path.dirname(filename)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+
+    def _write_file(self, content, filename):
+        self._mkdirs(filename)
+        print('Writing to '+ filename)
+        f = open(filename, "w+")
+        f.write(content)
+        f.close
+
     def getVersion(self):
         url = 'http://' + \
               self._host + ':' + self._port + \
@@ -61,6 +77,9 @@ class EMADownloader:
 
     def _set_view_id(self, id):
         self._view_id = id
+
+    def _set_module_info(self, info):
+        self._module_info = info
 
     def authorize(self, user, passwd):
         if (self._debug):
@@ -147,7 +166,63 @@ class EMADownloader:
             print('\t_view_id={}'.format(self._view_id))
             print('get_view_list()')
 
-    def get_power_batch(self, date_str):
+    def get_view_detail(self):
+        if (self._debug):
+            print('get_view_detail()')
+
+        url = self._url(reg_endpoints['viewDetail'])
+        if (self._debug):
+            print('\turl={}'.format(url))
+
+        data = {
+            'access_token': self._access_token,
+            'systemId': self._system_id,
+            'viewInfoId': self._view_id,
+            'language': self._general_conf['content-language']
+        }
+        self._add_check_code(data)
+        if (self._debug):
+            print('\tdata={}'.format(data))
+
+        response = self._request(url, data)
+        json = response.json()
+        detail = json['data']['detail']
+        if (self._debug):
+            #print('\tdetail={}'.format(detail))
+            print(len(detail))
+            print('\tdetail={}'.format(detail[:155]))
+
+        record_length = 155
+        module_info = {}
+        n_modules = int(len(detail)/record_length)
+        for i in range(0, n_modules):
+            offset = i*record_length
+            serial_num = detail[ 0 + offset: 12      + offset]
+            chan       = detail[12 + offset: 13      + offset]
+            mod_id     = detail[15 + offset: 15 + 32 + offset]
+            if (self._debug):
+                print('\tserial={}, chan={}, id={}'.format(serial_num, chan, mod_id))
+            module_info[mod_id] = {
+                'serial_num': serial_num,
+                'chan': chan
+            }
+        self._set_module_info(module_info)
+        if (self._debug):
+            print('\tmodule_info={}'.format(self._module_info))
+
+        if (self._debug):
+            print('get_view_detail()')
+
+    def _iso_str(self, date_str, millis_str):
+        tz = pytz.timezone('US/Eastern')
+        date = datetime.strptime('{}T04:00:00'.format(date_str), '%Y%m%dT%H:%M:%S').astimezone(tz)
+        #print(date.dst())
+        timestamp = float(millis_str) / 1000.0
+        dt = datetime.fromtimestamp(timestamp) + timedelta(hours=13) - date.dst()
+        est_dt = tz.localize(dt)
+        return est_dt.isoformat()
+
+    def get_power_batch(self, date_str, outdir):
         if (self._debug):
             print('get_power_batch()')
 
@@ -169,8 +244,38 @@ class EMADownloader:
 
         response = self._request(url, data)
         json = response.json()
+        data_block = json['data']
+        detail = data_block['detail']
+        details = str(detail).split('&')
+        power = data_block['power'] # probably the total power time series
+        times = data_block['time'].split(',')
+        date_list = itertools.repeat(date_str, len(times))
+        datetimes = list(map(self._iso_str, date_list, times))
         if (self._debug):
             print('\tresponse={}'.format(json))
+            #print('\t{}'.format(power))
+        rows = []
+        for line in details:
+            mod_id, values = line.split('/', 1)
+            pwr_time_series = values.split(',')
+            #print(mod_id)
+            #print(pwr_time_series)
+            for i in range(0, len(pwr_time_series)):
+                mod_info = self._module_info[mod_id]
+                row = [
+                    mod_id,
+                    mod_info['serial_num'],
+                    mod_info['chan'],
+                    times[i],
+                    datetimes[i],
+                    pwr_time_series[i]
+                ]
+                rows.append(','.join(row))
+
+        header = 'mod_id,mod_sn,chan,ts,datetime,power\n'
+        csv = header + '\n'.join(sorted(rows))
+        filename = '{}/{}-batch.csv'.format(outdir, date_str)
+        self._write_file(csv, filename)
 
         if (self._debug):
             print('get_power_batch()')
