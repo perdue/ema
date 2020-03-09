@@ -218,8 +218,11 @@ class EMADownloader:
         date = datetime.strptime('{}T04:00:00'.format(date_str), '%Y%m%dT%H:%M:%S').astimezone(tz)
         #print(date.dst())
         timestamp = float(millis_str) / 1000.0
-        dt = datetime.fromtimestamp(timestamp) + timedelta(hours=13) - date.dst()
-        est_dt = tz.localize(dt)
+        dt0 = datetime.fromtimestamp(timestamp) 
+        dt1 = dt0 + timedelta(hours=13)
+        dt2 = dt1 + date.dst()
+        #print('{}, {}, {}'.format(dt0, dt1, dt2))
+        est_dt = tz.localize(dt2)
         return est_dt.isoformat()
 
     def get_power_batch(self, date_str, outdir):

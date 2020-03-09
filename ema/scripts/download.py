@@ -75,6 +75,10 @@ def main():
     downloader.get_power_batch('20191103', args.outdir)
     downloader.get_power_batch('20191201', args.outdir)
     downloader.get_power_batch('20200229', args.outdir)
+    downloader.get_power_batch('20200306', args.outdir)
+    downloader.get_power_batch('20200307', args.outdir)
+    downloader.get_power_batch('20200308', args.outdir)
+    downloader.get_power_batch('20200309', args.outdir)
 
     return 0
 
