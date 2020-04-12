@@ -4,6 +4,7 @@ libdirs = []
 libdirs.append(os.path.join(thisdir, '../'))
 libdirs.append(os.path.join(thisdir, '../../crypt'))
 libdirs.append(os.path.join(thisdir, '../../config'))
+libdirs.append(os.path.join(thisdir, '../../persist'))
 
 for libdir in libdirs:
     if libdir not in sys.path:

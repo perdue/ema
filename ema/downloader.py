@@ -225,7 +225,7 @@ class EMADownloader:
         est_dt = tz.localize(dt2)
         return est_dt.isoformat()
 
-    def get_power_batch(self, date_str, outdir):
+    def get_power_batch(self, date_str):
         if (self._debug):
             print('get_power_batch()')
 
@@ -277,8 +277,7 @@ class EMADownloader:
 
         header = 'mod_id,mod_sn,chan,ts,datetime,power\n'
         csv = header + '\n'.join(sorted(rows))
-        filename = '{}/{}-batch.csv'.format(outdir, date_str)
-        self._write_file(csv, filename)
+        return csv
 
         if (self._debug):
             print('get_power_batch()')

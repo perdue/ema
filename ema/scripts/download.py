@@ -10,6 +10,7 @@ from decrypt import Decrypter
 from downloader import EMADownloader
 import resource_endpoints
 from mac import MACGenerator
+import builder
 
 def main():
     """Console script for downloading EMA data."""
@@ -29,10 +30,10 @@ def main():
         help="print debug messages"
     )
     optional.add_argument(
-        "-d", "--outdir", required=False, action="store",
-        dest="outdir",
-        help="output directory",
-        default=os.path.expanduser("~")+"/downloads/ema"
+        "-o", "--output", required=False, action="store",
+        dest="outuri",
+        help="output dir as URI [default = file:~/downloads/ema/data, option = drive:<google-drive-dir>]",
+        default="file:"+os.path.expanduser("~")+"/downloads/ema/data"
     )
     parser._action_groups.append(optional)
     args = parser.parse_args()
@@ -49,6 +50,8 @@ def main():
     salt_key = decrypter.decrypt(ema_conf['salt_key'])
     salt_value = decrypter.decrypt(ema_conf['salt_value'])
     mac_generator = MACGenerator(secret_key, salt_key, salt_value, args.debug)
+
+    drive = builder.build_drive(args.outuri, conf['drive'])
 
     downloader = EMADownloader(
         ema_conf['host'],
@@ -71,14 +74,15 @@ def main():
     downloader.get_ecu_info()
     downloader.get_view_list()
     downloader.get_view_detail()
-    downloader.get_power_batch('20191009', args.outdir)
-    downloader.get_power_batch('20191103', args.outdir)
-    downloader.get_power_batch('20191201', args.outdir)
-    downloader.get_power_batch('20200229', args.outdir)
-    downloader.get_power_batch('20200306', args.outdir)
-    downloader.get_power_batch('20200307', args.outdir)
-    downloader.get_power_batch('20200308', args.outdir)
-    downloader.get_power_batch('20200309', args.outdir)
+#    downloader.get_power_batch('20191009', args.outdir)
+#    downloader.get_power_batch('20191103', args.outdir)
+#    downloader.get_power_batch('20191201', args.outdir)
+#    downloader.get_power_batch('20200229', args.outdir)
+#    downloader.get_power_batch('20200306', args.outdir)
+#    downloader.get_power_batch('20200307', args.outdir)
+#    downloader.get_power_batch('20200308', args.outdir)
+    csv = downloader.get_power_batch('20200309')
+    drive.write(csv, drive.outdir() + "/20200309-batch.csv")
 
     return 0
 

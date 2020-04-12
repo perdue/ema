@@ -14,3 +14,12 @@ ema:
   salt_value: !ENV ${EMA_SALT_VALUE}
   username: !ENV ${EMA_USERNAME}
   password: !ENV ${EMA_PASSWORD}
+
+drive:
+  app_name: "ema-data"
+  scopes: [
+    "https://www.googleapis.com/auth/drive.file"
+  ]
+  query_fields: "files/kind, files/id, files/name, files/mimeType, files/trashed, files/appProperties"
+  creds_file: !ENV ${EMA_DRIVE_CREDS}
+  token_file: !ENV ${EMA_DRIVE_TOKEN}
