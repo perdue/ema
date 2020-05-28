@@ -14,7 +14,7 @@ function main {
     source $ENV_KEY
     source $ENV_CREDS
     source $ENV_DRIVE
-    /usr/bin/env pipenv run python \
+    /usr/local/bin/pipenv run python \
         "${EMA_DIR}/scripts/download.py" \
         --conf "${EMA_DIR}/config.yaml" \
         --startdate "$(previous_date -31)" \
