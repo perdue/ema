@@ -13,7 +13,6 @@ from googleapiclient.http import MediaIoBaseUpload
 
 class GoogleDrive:
     def __init__(self, persist_dir, conf):
-        print(conf)
         self._dir = persist_dir
         self._scopes = conf['scopes']
         self._tokenfile = conf['token_file']
@@ -54,8 +53,14 @@ class GoogleDrive:
 
         return creds
 
+    def gzip_exists(self, filename):
+        return self._exists_in_drive(filename, 'application/x-compressed')
+
     def _dir_exists(self, dirname):
-        query = "name='{}' and mimeType='application/vnd.google-apps.folder'".format(dirname)
+        return self._exists_in_drive(dirname, 'application/vnd.google-apps.folder')
+
+    def _exists_in_drive(self, name, mime_type):
+        query = "name='{}' and mimeType='{}'".format(name, mime_type)
         response = self._service.files() \
             .list(q=query,
                   spaces='drive',
@@ -64,6 +69,7 @@ class GoogleDrive:
         
         found = None
         for item in response.get('files', []):
+            #print(item)
             app_props = item.get('appProperties', {})
             app_name = app_props.get('appName', None)
             if app_name and app_name==self._app_props['appName'] and not item.get('trashed'):
@@ -88,12 +94,15 @@ class GoogleDrive:
     def _mkdirs(self, dirs=[]):
         parents = []
         for d in dirs:
-            if not self._dir_exists(d):
+            exists = self._dir_exists(d)
+            if exists:
+                id = exists['id']
+            else:
                 id = self._create_dir(d, parents[-1:])
-                parents.append(id)
+            parents.append(id)
         return parents
 
-    def write(self, content, filename):
+    def write_gzip(self, content, filename):
         parts = filename.split('/')
         dirs = parts[:-1]
         name = parts[-1]
@@ -105,16 +114,17 @@ class GoogleDrive:
 
             mime_type = 'application/x-compressed'
             file_metadata = {
-                'name': name + '.gz',
-                'parents': parents,
-                'mimeType': mime_type
+                'name': name,
+                'mimeType': mime_type,
+                'appProperties': self._app_props,
+                'parents': parents
                 }
             content_bytes = io.BytesIO(''.encode('utf-8'))
             gzip_obj = GzipFile(filename=name, fileobj=content_bytes, mode='wb')
             gzip_obj.write(content.encode('utf-8'))
             gzip_obj.close()
             media = MediaIoBaseUpload(content_bytes, mimetype=mime_type)
-            print("Writing to 'drive:" + filename + ".gz'")
+            print("Writing to 'drive:" + filename + "'")
             file = self._service.files() \
                 .create(body=file_metadata,
                         media_body=media,

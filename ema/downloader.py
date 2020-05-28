@@ -13,7 +13,7 @@ import itertools
 from resource_endpoints import *
 
 class EMADownloader:
-    def __init__(self, host, port, access_token, key_text, mac_generator, general_conf, debug=False):
+    def __init__(self, host, port, access_token, mac_generator, general_conf, debug=False):
         self._host = host
         self._port = str(port)
         self._access_token = access_token
