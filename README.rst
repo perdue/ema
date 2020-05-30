@@ -16,17 +16,23 @@ EMA Analyze
 
 
 
-Package to analyze my solar panel production.
+Package to download my solar panel production data.
 
 
 * Free software: MIT license
 * Documentation: https://ema.readthedocs.io.
 
 
-Features
---------
+Configuration
+-------
 
-* TODO
+A configuration file is included that contains default parameters.
+The EMA connection-specific parameters are supplied through
+environment variables.  Google Drive credentials file locations are
+also provided through environment variables.
+
+
+
 
 Credits
 -------
