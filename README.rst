@@ -33,7 +33,7 @@ pipenv
 Configuration
 ===========
 
-A configuration file is included that contains default parameters.
+A configuration file (``config.yaml``) is included that contains default parameters.
 The EMA connection-specific parameters are supplied through
 environment variables.  Google Drive credentials file locations are
 also provided through environment variables.
