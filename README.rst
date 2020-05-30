@@ -22,15 +22,32 @@ Package to download my solar panel production data.
 * Free software: MIT license
 * Documentation: https://ema.readthedocs.io.
 
+===========
+Set Up
+===========
+clone
 
+pipenv
+
+===========
 Configuration
--------
+===========
 
 A configuration file is included that contains default parameters.
 The EMA connection-specific parameters are supplied through
 environment variables.  Google Drive credentials file locations are
 also provided through environment variables.
 
+Encryption of EMA Paramaters
+-------
+
+The EMA parameters are assumed to be encrypted.
+A command line utility (``encrypt.py``) is provided to create files that
+contain the encrypted environment variables.
+
+To generate new files:
+
+::
 
 
 
