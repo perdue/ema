@@ -29,9 +29,9 @@ clone
 
 pipenv
 
-===========
+================
 Configuration
-===========
+================
 
 A configuration file (``config.yaml``) is included that contains default parameters.
 The EMA connection-specific parameters are supplied through
@@ -39,7 +39,7 @@ environment variables.  Google Drive credentials file locations are
 also provided through environment variables.
 
 Encryption of EMA Paramaters
--------
+----------------------------
 
 The EMA parameters are assumed to be encrypted.
 A command line utility (``encrypt.py``) is provided to create files that
@@ -47,9 +47,12 @@ contain the encrypted environment variables.
 
 To generate new files:
 
-::
+.. code-block:: bash
 
+  python ./ema/scripts/encrypt.py -h
+  python ./ema/scripts/encrypt.py -K /tmp/ema/key -C /tmp/ema/credentials -a AAA -s BBB -sk CCC -sv DDD -u EEE -p FFF
 
+The encryption key can be provided with ``-k key_string``.
 
 Credits
 -------
